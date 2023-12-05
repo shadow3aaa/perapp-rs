@@ -1,4 +1,18 @@
 #!/bin/bash
+#
+# Copyright 2023 shadow3aaa@gitbub.com
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+#  You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
 init_package() {
 	cd $SHDIR
 	rm -rf $TEMPDIR
@@ -84,12 +98,12 @@ build() {
 		fi
 
 		init_package
-		cp -f target/aarch64-linux-android/debug/template_nha9nday6c $TEMPDIR/template_nha9nday6c
+		cp -f target/aarch64-linux-android/debug/perapp-rs $TEMPDIR/perapp-rs
 
 		cd $TEMPDIR
-		zip -9 -rq "../template_nha9nday6c(debug).zip" .
+		zip -9 -rq "../perapp-rs(debug).zip" .
 
-		echo "Module Packaged: output/template_nha9nday6c(debug).zip"
+		echo "Module Packaged: output/perapp-rs(debug).zip"
 	fi
 
 	if $RELEASE_BUILD; then
@@ -100,13 +114,13 @@ build() {
 		fi
 
 		init_package
-		cp -f target/aarch64-linux-android/release/template_nha9nday6c $TEMPDIR/template_nha9nday6c
+		cp -f target/aarch64-linux-android/release/perapp-rs $TEMPDIR/perapp-rs
 
-		$STRIP $TEMPDIR/template_nha9nday6c
+		$STRIP $TEMPDIR/perapp-rs
 
 		cd $TEMPDIR
-		zip -9 -rq "../template_nha9nday6c(release).zip" .
+		zip -9 -rq "../perapp-rs(release).zip" .
 
-		echo "Module Packaged: output/template_nha9nday6c(release).zip"
+		echo "Module Packaged: output/perapp-rs(release).zip"
 	fi
 }
