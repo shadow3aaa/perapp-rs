@@ -1,0 +1,10 @@
+# rust
+/target
+/Cargo.lock
+
+# module-dirty
+/module/README.md
+/module/module.prop
+
+# build
+/output
