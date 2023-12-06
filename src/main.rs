@@ -13,9 +13,15 @@
 *  limitations under the License. */
 mod topapp;
 
+use std::time::{Duration, Instant};
+
 use topapp::get_topapp;
 
 fn main() {
+    let ins = Instant::now();
+
     let (pid, app) = get_topapp().unwrap();
+    println!("{pid}:{app}");
     
+    println!("cost: {:?}", ins.elapsed());
 }

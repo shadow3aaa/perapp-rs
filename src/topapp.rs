@@ -34,12 +34,12 @@ fn dump() -> Option<String> {
 }
 
 fn parse_topapp(dump: &str) -> Option<(pid_t, String)> {
-    let pid = dump.lines().find(|l| l.contains("Session{"))?;
+    let pid = dump.lines().rfind(|l| l.contains("Session{"))?;
     let pid = pid.split_whitespace().nth(3)?;
     let pid = pid.split(':').next()?;
     let pid = pid.trim().parse().ok()?;
 
-    let pkg = dump.lines().find(|l| l.contains("package="))?;
+    let pkg = dump.lines().rfind(|l| l.contains("package="))?;
     let pkg = pkg.split_whitespace().nth(2)?;
     let pkg = pkg.split('=').nth(1)?.to_string();
 
