@@ -11,6 +11,7 @@ repository = "https://github.com/shadow3aaa/perapp-rs"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
+libc = "0.2.150"
 
 [build-dependencies]
 serde = "1.0.171"
