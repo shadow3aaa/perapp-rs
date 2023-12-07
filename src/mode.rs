@@ -29,10 +29,13 @@ impl FromStr for Mode {
 
     fn from_str(s: &str) -> anyhow::Result<Self> {
         Ok(match s {
+            "init" => Self::Init,
+            "standby" => Self::Standby,
             "powersave" => Self::Powersave,
             "balance" => Self::Balance,
             "performance" => Self::Performance,
             "fast" => Self::Fast,
+            "pedestal" => Self::Pedestal,
             _ => panic!("illegal Mode"),
         })
     }

@@ -1,0 +1,18 @@
+# 配置示例
+#
+# com.example.a balance
+# com.example.b powersave
+# com.example.c performance
+# com.example.d fast
+#
+# '#'开头或者'//'开头的行作为注释, 不被解析, 就像这行一样
+# 不支持多行注释
+#
+# 注释示例
+#
+# 这是一行注释
+// 这是一行注释
+#
+
+# 亮屏默认模式, 删除会导致解析错误
+default-mode balance

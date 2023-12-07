@@ -36,19 +36,17 @@ fn main() -> anyhow::Result<()> {
     let (mut pid, mut pkg) = (-1, String::new());
 
     let dir = Path::new(DEV_DIR);
-    fs::create_dir(dir)?;
+    let _ = fs::create_dir(dir);
     fs::write(dir.join("pkg"), &pkg)?;
     fs::write(dir.join("pid"), pid.to_string())?;
 
     exec_powercfg(pid, &pkg, mode)?;
 
     loop {
-        thread::sleep(Duration::from_secs(1));
+        thread::sleep(Duration::from_millis(1250));
         perapp_cfg.update()?;
 
-        let Some((cur_pid, cur_pkg)) = get_topapp() else {
-            continue;
-        };
+        let (cur_pid, cur_pkg) = get_topapp().unwrap_or_default();
 
         fs::write(dir.join("pkg"), &pkg)?;
         fs::write(dir.join("pid"), pid.to_string())?;
@@ -73,18 +71,23 @@ fn main() -> anyhow::Result<()> {
             pid = cur_pid;
 
             if power_cfg.features.strict {
-                exec_powercfg(pid, &pkg, mode)?;
-            } else if cur_mode != mode {
                 mode = cur_mode;
                 exec_powercfg(pid, &pkg, mode)?;
+                continue;
             }
+        }
+
+        if cur_mode != mode {
+            mode = cur_mode;
+            exec_powercfg(pid, &pkg, mode)?;
         }
     }
 }
 
 fn exec_powercfg(pid: pid_t, pkg: &str, mode: Mode) -> anyhow::Result<()> {
+    let arg = format!("{POWER_CONFIG_SHELL} {}", mode.to_string());
     Command::new("sh")
-        .args(["-c", POWER_CONFIG_SHELL, &mode.to_string()])
+        .args(["-c", &arg])
         .envs([("pid", pid.to_string()), ("pkg", pkg.to_string())])
         .spawn()?;
 
@@ -92,8 +95,10 @@ fn exec_powercfg(pid: pid_t, pkg: &str, mode: Mode) -> anyhow::Result<()> {
 }
 
 fn device_wake() -> anyhow::Result<bool> {
-    let dump = Command::new("dumpsys").arg("power").output()?;
+    let dump = Command::new("dumpsys")
+        .args(["window", "policy"])
+        .output()?;
     let dump = String::from_utf8_lossy(&dump.stdout).into_owned();
 
-    Ok(dump.contains("mWakefulness=Awake"))
+    Ok(dump.contains("screenState=SCREEN_STATE_ON"))
 }

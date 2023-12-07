@@ -15,5 +15,9 @@
 # limitations under the License.
 MODDIR=${0%/*}
 
-killall perapp-rs
-nohup $MODDIR/perapp-rs 2>&1 &
+if [[ -f /data/powercfg.json && -f /data/powercfg.sh ]]; then
+	killall perapp-rs
+	nohup $MODDIR/perapp-rs 2>&1 &
+else
+	touch $MODDIR/disable
+fi

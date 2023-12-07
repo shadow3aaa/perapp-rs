@@ -48,6 +48,7 @@ impl Config {
         }
 
         if reparse {
+            println!("reparse");
             loop {
                 if let Ok(conf) = fs::read_to_string(CONFIG) {
                     self.data = Self::parse_config(&conf);
