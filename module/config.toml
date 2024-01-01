@@ -1,0 +1,17 @@
+[global]
+# 这会是亮屏时的默认模式
+onscreen_mode = "balance"
+# 这会在关闭屏幕时切换到对应模式
+offscreen_mode = "powersave"
+
+[powersave]
+list = ["com.powersave.pkg"]
+
+[balance]
+list = ["com.balance.pkg"]
+
+[performance]
+list = ["com.performance.pkg"]
+
+[fast]
+list = ["com.fast.pkg"]

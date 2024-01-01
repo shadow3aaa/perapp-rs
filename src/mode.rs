@@ -13,6 +13,8 @@
 *  limitations under the License. */
 use std::str::FromStr;
 
+use anyhow::anyhow;
+
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum Mode {
     Init,
@@ -36,7 +38,7 @@ impl FromStr for Mode {
             "performance" => Self::Performance,
             "fast" => Self::Fast,
             "pedestal" => Self::Pedestal,
-            _ => panic!("illegal Mode"),
+            _ => return Err(anyhow!("illegal Mode")),
         })
     }
 }

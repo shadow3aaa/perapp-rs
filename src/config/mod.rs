@@ -11,17 +11,22 @@
 *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 *  See the License for the specific language governing permissions and
 *  limitations under the License. */
-use std::{collections::HashMap, fs, str::FromStr, thread, time::Duration};
+mod data;
+
+use std::{fs, thread, time::Duration};
 
 use inotify::{Inotify, WatchMask};
 
-use crate::mode::Mode;
+use anyhow::anyhow;
 
-const CONFIG: &str = "/data/media/0/Android/perapp-rs/config.txt";
+use crate::mode::Mode;
+use data::Data;
+
+const CONFIG: &str = "/data/media/0/Android/perapp-rs/config.toml";
 
 pub struct Config {
     inotify: Inotify,
-    data: HashMap<String, Mode>,
+    data: Data,
 }
 
 impl Config {
@@ -32,31 +37,18 @@ impl Config {
             .add(CONFIG, WatchMask::CLOSE_WRITE | WatchMask::MODIFY)?;
 
         let conf = fs::read_to_string(CONFIG)?;
-        let data = Self::parse_config(&conf);
+        let data = Data::new(&conf)?;
 
         Ok(Self { inotify, data })
     }
 
     pub fn update(&mut self) -> anyhow::Result<()> {
-        let mut reparse = false;
+        let _reparse = false;
 
         let mut buffer = [0; 1024];
         if let Ok(event) = self.inotify.read_events(&mut buffer) {
             if event.count() > 0 {
-                reparse = true;
-            }
-        }
-
-        if reparse {
-            println!("reparse");
-            loop {
-                if let Ok(conf) = fs::read_to_string(CONFIG) {
-                    self.data = Self::parse_config(&conf);
-                    break;
-                }
-
-                thread::sleep(Duration::from_secs(1));
-                eprintln!("Failed to read config, retrying…");
+                self.reparse()?;
             }
         }
 
@@ -78,26 +70,44 @@ impl Config {
         Ok(())
     }
 
-    pub fn mode(&self, pkg: &str) -> Mode {
-        if let Some(mode) = self.data.get(pkg).copied() {
-            mode
-        } else {
-            self.data.get("default-mode").copied().unwrap()
+    pub fn reparse(&mut self) -> anyhow::Result<()> {
+        let mut counter = 0;
+        loop {
+            let Ok(conf) = fs::read_to_string(CONFIG) else {
+                counter += 1;
+
+                if counter > 10 {
+                    return Err(anyhow!("To many retries!"));
+                }
+
+                thread::sleep(Duration::from_secs(1));
+                eprintln!("Failed to read config, retrying…");
+                continue;
+            };
+
+            if let Ok(data) = Data::new(&conf) {
+                self.data = data;
+                return Ok(());
+            }
+
+            counter += 1;
+
+            if counter > 10 {
+                return Err(anyhow!("To many retries!"));
+            }
+
+            thread::sleep(Duration::from_secs(1));
+            eprintln!("Failed to parse config, retrying…");
         }
     }
 
-    fn parse_config(conf: &str) -> HashMap<String, Mode> {
-        conf.lines()
-            .filter(|l| !l.trim().starts_with('#'))
-            .filter(|l| !l.trim().starts_with("//"))
-            .filter_map(|l| {
-                let mut iter = l.split_whitespace();
-                let pkg = iter.next()?.to_string();
-                let mode = iter.next()?;
-                let mode = Mode::from_str(mode).ok()?;
-
-                Some((pkg, mode))
-            })
-            .collect()
+    pub fn mode(&self, pkg: &str, onscreen: bool) -> Mode {
+        if let Some(mode) = self.data.get(pkg) {
+            mode
+        } else if onscreen {
+            self.data.onscreen_mode
+        } else {
+            self.data.offscreen_mode
+        }
     }
 }

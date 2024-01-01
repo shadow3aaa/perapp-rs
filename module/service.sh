@@ -15,7 +15,7 @@
 # limitations under the License.
 MODDIR=${0%/*}
 
-if [[ -f /data/powercfg.json && -f /data/powercfg.sh ]]; then
+if [[ -f /data/powercfg.json ]]; then
 	killall perapp-rs
 	nohup $MODDIR/perapp-rs 2>&1 &
 else
