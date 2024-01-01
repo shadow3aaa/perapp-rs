@@ -14,10 +14,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 MODDIR=${0%/*}
+USERDIR=/sdcard/Android/perapp-rs
 
 if [[ -f /data/powercfg.json ]]; then
 	killall perapp-rs
-	nohup $MODDIR/perapp-rs 2>&1 &
+	nohup $MODDIR/perapp-rs 2>&1 >$USERDIR/error.log &
 else
 	touch $MODDIR/disable
 fi

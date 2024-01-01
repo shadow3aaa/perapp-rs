@@ -21,7 +21,9 @@ ui_print "配置文件在 $USERDIR"
 ui_print "如果模块没有检测到powercfg, 则会自动关闭自己, 请确保powercfg存在"
 
 mkdir $USERDIR
-mv $MODPATH/config.toml $USERDIR/config.toml
+if [ ! -f $USERDIR/config.toml ]; then
+	cp $MODPATH/config.toml $USERDIR/config.toml
+fi
 
 set_perm_recursive $MODPATH 0 0 0755 0644
 set_perm $MODPATH/perapp-rs 0 0 0755
