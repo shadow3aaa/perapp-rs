@@ -16,6 +16,11 @@
 MODDIR=${0%/*}
 USERDIR=/sdcard/Android/perapp-rs
 
+# wait until the sdcard is decrypted
+until [ -d $USERDIR ]; do
+	sleep 1
+done
+
 if [[ -f /data/powercfg.json ]]; then
 	killall perapp-rs
 	nohup $MODDIR/perapp-rs 2>&1 >$USERDIR/error.log &
