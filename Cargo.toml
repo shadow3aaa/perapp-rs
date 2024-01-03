@@ -1,6 +1,6 @@
 [package]
 name = "perapp-rs"
-version = "0.1.0"
+version = "0.1.1"
 edition = "2021"
 authors = ["shadow3"]
 description = "分app模式写入器, 按照powercfg描述, 对app进行不同的操作"
