@@ -102,10 +102,12 @@ impl Config {
     }
 
     pub fn mode(&self, pkg: &str, onscreen: bool) -> Mode {
-        if let Some(mode) = self.data.get(pkg) {
-            mode
-        } else if onscreen {
-            self.data.onscreen_mode
+        if onscreen {
+            if let Some(mode) = self.data.get(pkg) {
+                mode
+            } else {
+                self.data.onscreen_mode
+            }
         } else {
             self.data.offscreen_mode
         }
