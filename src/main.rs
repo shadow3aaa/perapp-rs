@@ -102,5 +102,5 @@ fn screen_status() -> anyhow::Result<bool> {
         .output()?;
     let dump = String::from_utf8_lossy(&dump.stdout).into_owned();
 
-    Ok(dump.contains("screenState=SCREEN_STATE_ON"))
+    Ok(dump.contains("interactiveState=INTERACTIVE_STATE_AWAKE"))
 }
