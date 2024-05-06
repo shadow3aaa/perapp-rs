@@ -91,7 +91,7 @@ fn exec_powercfg<P: AsRef<Path>>(
     Command::new("sh")
         .args(["-c", &arg])
         .envs([("pid", pid.to_string()), ("pkg", pkg.to_string())])
-        .spawn()?;
+        .status()?;
 
     Ok(())
 }
